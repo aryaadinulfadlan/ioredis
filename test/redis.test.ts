@@ -68,4 +68,20 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     expect(zMin).toEqual(["budi", "85"]);
     await redis.del("names");
   });
+  it("should support hashes", async () => {
+    await redis.hset("user_one", {
+      id: "1",
+      name: "eko",
+      email: "eko@mail.com",
+    });
+    const user_one = await redis.hgetall("user_one");
+    const user_one_email = await redis.hget("user_one", "email");
+    expect(user_one).toEqual({
+      id: "1",
+      name: "eko",
+      email: "eko@mail.com",
+    });
+    expect(user_one_email).toBe("eko@mail.com");
+    await redis.del("user_one");
+  });
 });
