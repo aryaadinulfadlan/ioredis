@@ -54,4 +54,18 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     expect(allSets).toEqual(["eko", "kurniawan", "khannedy"]);
     await redis.del("names");
   });
+  it("should support sorted set", async () => {
+    await redis.zadd("names", 100, "eko");
+    await redis.zadd("names", 85, "budi");
+    await redis.zadd("names", 95, "joko");
+    const zLength = await redis.zcard("names");
+    const zData = await redis.zrange("names", 0, -1);
+    expect(zLength).toBe(3);
+    expect(zData).toEqual(["budi", "joko", "eko"]);
+    const zMax = await redis.zpopmax("names");
+    const zMin = await redis.zpopmin("names");
+    expect(zMax).toEqual(["eko", "100"]);
+    expect(zMin).toEqual(["budi", "85"]);
+    await redis.del("names");
+  });
 });
