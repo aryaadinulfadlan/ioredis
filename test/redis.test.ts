@@ -41,4 +41,17 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     expect(lastLength).toBe(1);
     await redis.del("names");
   });
+  it("should support set", async () => {
+    await redis.sadd("names", "eko");
+    await redis.sadd("names", "kurniawan");
+    await redis.sadd("names", "khannedy");
+    await redis.sadd("names", "eko");
+    await redis.sadd("names", "kurniawan");
+    await redis.sadd("names", "khannedy");
+    const setLength = await redis.scard("names");
+    const allSets = await redis.smembers("names");
+    expect(setLength).toBe(3);
+    expect(allSets).toEqual(["eko", "kurniawan", "khannedy"]);
+    await redis.del("names");
+  });
 });
