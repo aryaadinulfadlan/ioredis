@@ -150,4 +150,38 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     await redis.del("name");
     await redis.del("address");
   });
+  it("should support publish to stream", async () => {
+    await redis.del("members");
+    for (let i = 0; i < 10; i++) {
+      await redis.xadd(
+        "members",
+        "*",
+        "name",
+        `Eko ${i}`,
+        "address",
+        `bandung ${i}`
+      );
+    }
+  });
+  it("should support create consumer group and consumer / subscriber", async () => {
+    await redis.xgroup("CREATE", "members", "group-1", "0");
+    await redis.xgroup("CREATECONSUMER", "members", "group-1", "consumer-1");
+    await redis.xgroup("CREATECONSUMER", "members", "group-1", "consumer-2");
+  });
+  it("should can consum stream", async () => {
+    const result = await redis.xreadgroup(
+      "GROUP",
+      "group-1",
+      "consumer-1",
+      "COUNT",
+      2,
+      "BLOCK",
+      3000,
+      "STREAMS",
+      "members",
+      ">"
+    );
+    expect(result).not.toBeNull();
+    console.info(JSON.stringify(result, null, 2));
+  });
 });
