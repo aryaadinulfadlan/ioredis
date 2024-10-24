@@ -130,4 +130,13 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     expect(visitors).toBe(6);
     await redis.del("visitors");
   });
+  it("should support pipeline", async () => {
+    const pipeline = redis.pipeline();
+    pipeline.setex("name", 2, "eko");
+    pipeline.setex("address", 2, "bandung");
+    await pipeline.exec();
+    expect(await redis.get("name")).toBe("eko");
+    expect(await redis.get("address")).toBe("bandung");
+    await redis.del("visitors");
+  });
 });
