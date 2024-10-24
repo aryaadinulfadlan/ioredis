@@ -137,6 +137,17 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     await pipeline.exec();
     expect(await redis.get("name")).toBe("eko");
     expect(await redis.get("address")).toBe("bandung");
-    await redis.del("visitors");
+    await redis.del("name");
+    await redis.del("address");
+  });
+  it("should support transactions", async () => {
+    const transactions = redis.multi();
+    transactions.setex("name", 2, "eko");
+    transactions.setex("address", 2, "bandung");
+    await transactions.exec();
+    expect(await redis.get("name")).toBe("eko");
+    expect(await redis.get("address")).toBe("bandung");
+    await redis.del("name");
+    await redis.del("address");
   });
 });
