@@ -122,4 +122,12 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     expect(searchOnlySMP).toEqual(["Dekat SD", "Dekat SMP"]);
     await redis.del("sellers");
   });
+  it("should support hyper log log", async () => {
+    await redis.pfadd("visitors", "eko", "kurniawan", "khannedy");
+    await redis.pfadd("visitors", "eko", "budi", "joko");
+    await redis.pfadd("visitors", "budi", "joko", "rully");
+    const visitors = await redis.pfcount("visitors");
+    expect(visitors).toBe(6);
+    await redis.del("visitors");
+  });
 });
