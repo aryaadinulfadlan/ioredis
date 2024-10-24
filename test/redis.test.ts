@@ -184,4 +184,18 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     expect(result).not.toBeNull();
     console.info(JSON.stringify(result, null, 2));
   });
+  it("should can subscribe to pubsub", async () => {
+    redis.subscribe("channel_one");
+    redis.on("message", (channel, message) => {
+      console.info(
+        `Receive message from channel ${channel} with message ${message}`
+      );
+    });
+    await new Promise((resolve, _reject) => setTimeout(resolve, 60000));
+  }, 60000);
+  it("should can publish to pubsub", async () => {
+    for (let i = 0; i < 10; i++) {
+      await redis.publish("channel_one", `Hello ${i}`);
+    }
+  });
 });
