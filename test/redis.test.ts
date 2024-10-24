@@ -84,4 +84,42 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     expect(user_one_email).toBe("eko@mail.com");
     await redis.del("user_one");
   });
+  it("should support geo point", async () => {
+    await redis.geoadd("sellers", 101.942936, -1.398948, "Dekat SD");
+    await redis.geoadd("sellers", 101.943967, -1.398081, "Dekat SMP");
+    const distanceInMetres = await redis.geodist(
+      "sellers",
+      "Dekat SD",
+      "Dekat SMP"
+    );
+    const distanceInKM = await redis.geodist(
+      "sellers",
+      "Dekat SD",
+      "Dekat SMP",
+      "KM"
+    );
+    const searchOnlySD = await redis.geosearch(
+      "sellers",
+      "fromlonlat",
+      101.942872,
+      -1.398842,
+      "byradius",
+      140,
+      "m"
+    );
+    const searchOnlySMP = await redis.geosearch(
+      "sellers",
+      "fromlonlat",
+      101.942872,
+      -1.398842,
+      "byradius",
+      150,
+      "m"
+    );
+    expect(distanceInMetres).toBe(String(149.7089));
+    expect(distanceInKM).toBe(String(0.1497));
+    expect(searchOnlySD).toEqual(["Dekat SD"]);
+    expect(searchOnlySMP).toEqual(["Dekat SD", "Dekat SMP"]);
+    await redis.del("sellers");
+  });
 });
