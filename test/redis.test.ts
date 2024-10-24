@@ -18,11 +18,27 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     expect(pong).toBe("PONG");
   });
   it("should support string", async () => {
-    await redis.setex("name", 2, "Eko");
+    await redis.setex("name", 1, "Eko");
     const nameExists = await redis.get("name");
     expect(nameExists).toBe("Eko");
-    await new Promise((resolve, _reject) => setTimeout(resolve, 3000));
+    await new Promise((resolve, _reject) => setTimeout(resolve, 2000));
     const nameExpired = await redis.get("name");
     expect(nameExpired).toBeNull();
+  });
+  it("should support list", async () => {
+    await redis.rpush("names", "eko");
+    await redis.rpush("names", "kurniawan");
+    await redis.rpush("names", "khannedy");
+    const namesLength = await redis.llen("names");
+    expect(namesLength).toBe(3);
+    const allNames = await redis.lrange("names", 0, -1);
+    expect(allNames).toEqual(["eko", "kurniawan", "khannedy"]);
+    const firstNamePopped = await redis.lpop("names");
+    expect(firstNamePopped).toBe("eko");
+    const secondNamePopped = await redis.rpop("names");
+    expect(secondNamePopped).toBe("khannedy");
+    const lastLength = await redis.llen("names");
+    expect(lastLength).toBe(1);
+    await redis.del("names");
   });
 });
