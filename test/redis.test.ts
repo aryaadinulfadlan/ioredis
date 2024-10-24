@@ -17,4 +17,12 @@ describe("Belajar NodeJS Redis using Ioredis", () => {
     const pong = await redis.ping();
     expect(pong).toBe("PONG");
   });
+  it("should support string", async () => {
+    await redis.setex("name", 2, "Eko");
+    const nameExists = await redis.get("name");
+    expect(nameExists).toBe("Eko");
+    await new Promise((resolve, _reject) => setTimeout(resolve, 3000));
+    const nameExpired = await redis.get("name");
+    expect(nameExpired).toBeNull();
+  });
 });
